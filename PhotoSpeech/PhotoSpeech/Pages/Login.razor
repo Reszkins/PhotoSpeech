@@ -1,5 +1,45 @@
-﻿<h3>Login</h3>
+﻿@page "/login"
+
+@inject NavigationManager NavigationManager
+
+<div style="margin-left: 20%; margin-right:20%">
+    <div class="d-inline-block pa-10">
+        <div class="d-block pa-2">
+            <MudTextField @bind-Value="LoginValue" Label="Login" Variant="Variant.Outlined" Class="d-block"></MudTextField>
+        </div>
+        <div class="d-block pa-2">
+            <MudTextField @bind-Value="PasswordValue" Label="Password" Variant="Variant.Outlined" Class="d-block"></MudTextField>
+        </div>
+        <div class="d-block pa-2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="OnLoginClick">Login</MudButton>
+        </div>
+    </div>
+    <div class="d-inline-block pa-10" style="margin-left: 150px">
+        <div class="d-block pa-2">
+            <MudTextField @bind-Value="RegisterLoginValue" Label="RegisterLogin" Variant="Variant.Outlined" Class="d-block"></MudTextField>
+        </div>
+        <div class="d-block pa-2">
+            <MudTextField @bind-Value="RegisterPasswordValue" Label="RegisterPassword" Variant="Variant.Outlined" Class="d-block"></MudTextField>
+        </div>
+        <div class="d-block pa-2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="OnLoginClick">Register</MudButton>
+        </div>
+    </div>
+</div>
 
 @code {
-    // NOT IMPLEMENTED
+    public string LoginValue { get; set; } = string.Empty;
+    public string PasswordValue { get; set; } = string.Empty;
+    public string RegisterLoginValue { get; set; } = string.Empty;
+    public string RegisterPasswordValue { get; set; } = string.Empty;
+
+    private void OnLoginClick()
+    {
+        NavigationManager.NavigateTo("/categories");
+    }
+
+    private void OnRegisterClick()
+    {
+        NavigationManager.NavigateTo("/categories");
+    }
 }

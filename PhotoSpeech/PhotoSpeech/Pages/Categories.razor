@@ -1,0 +1,84 @@
+﻿@page "/categories"
+
+@using PhotoSpeech.DataAccess.Models
+
+@inject NavigationManager NavigationManager
+
+@if (!languagePicked)
+{
+    <MudTable Items="@languages" Hover="true" LoadingProgressColor="Color.Info" Style="margin-left: 15%; margin-right: 15%;">
+        <HeaderContent>
+            <MudTh>Languages</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Language" Style="width: 50%">@context</MudTd>
+            <MudTd DataLabel="" Style="width: 50%">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="OnChooseThisLanguageClick">Choose this language</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>  
+}
+else
+{
+    <MudTable Items="@categories" Hover="true" LoadingProgressColor="Color.Info" Style="margin-left: 15%; margin-right: 15%;">
+        <HeaderContent>
+            <MudTh>Category</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Category" Style="width: 50%">@context.Name</MudTd>
+            <MudTd DataLabel="" Style="width: 50%">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="OnChooseThisCategoryClick">Choose this category</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>    
+}
+
+
+
+
+@code {
+    private List<Category> categories = new();
+    private List<string> languages = new();
+
+    private bool languagePicked = false;
+
+    protected override void OnInitialized()
+    {
+        categories.Add(new Category
+            {
+                Id = 1,
+                Name = "Animals"
+            });
+        categories.Add(new Category
+            {
+                Id = 2,
+                Name = "People"
+            });
+        categories.Add(new Category
+            {
+                Id = 3,
+                Name = "Weather"
+            });
+        categories.Add(new Category
+            {
+                Id = 4,
+                Name = "Colors"
+            });
+
+        languages.AddRange(new[] { "english", "polish", "german", "italian", "spanish" });
+    }
+
+    private void OnChooseThisLanguageClick()
+    {
+        languagePicked = true;
+    }
+
+    private void OnChooseThisCategoryClick()
+    {
+        var language = "EN";
+        var category = "Animals";
+        NavigationManager.NavigateTo($"/game/{language}/{category}");
+    }
+}

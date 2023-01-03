@@ -1,7 +1,20 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@inject NavigationManager NavigationManager
 
-<h1>PhotoSpeech</h1>
-<p>Base app</p>
+<MudPaper Class="align-center" Style="width: 50%; height: 50%; margin: auto;" Elevation="0">
 
+    <MudText Align="Align.Center" Style="font-size: 100px;">PhotoSpeech</MudText>
+    
+    <MudPaper Style="height: 50px;" Elevation="0"></MudPaper>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-left: 45%; margin-right: 45%; width: 10%;" OnClick="OnLoginClick">Login</MudButton>
+
+</MudPaper>
+
+@code {
+    private void OnLoginClick()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+}
