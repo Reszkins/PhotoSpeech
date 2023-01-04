@@ -1,6 +1,9 @@
 ﻿@page "/login"
+@using PhotoSpeech.DataAccess.Handlers
+@using PhotoSpeech.DataAccess.Handlers.Interfaces
 
 @inject NavigationManager NavigationManager
+@inject IUserHandler _userHandler
 
 <div style="margin-left: 20%; margin-right:20%">
     <div class="d-inline-block pa-10">
@@ -33,13 +36,15 @@
     public string RegisterLoginValue { get; set; } = string.Empty;
     public string RegisterPasswordValue { get; set; } = string.Empty;
 
-    private void OnLoginClick()
+    private async Task OnLoginClick()
     {
+        //var result = await _userHandler.Login(LoginValue, PasswordValue);
         NavigationManager.NavigateTo("/categories");
     }
 
-    private void OnRegisterClick()
+    private async Task OnRegisterClick()
     {
+        //var result = await _userHandler.Register(RegisterLoginValue, RegisterPasswordValue);
         NavigationManager.NavigateTo("/categories");
     }
 }

@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
+using PhotoSpeech.DataAccess.Handlers;
+using PhotoSpeech.DataAccess.Handlers.Interfaces;
+using PhotoSpeech.DataAccess.Models;
+using PhotoSpeech.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +14,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddMudServices();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IUserHandler, UserHandler>();
+builder.Services.AddSingleton<LoggedUserProvider>();
 
 var app = builder.Build();
 
