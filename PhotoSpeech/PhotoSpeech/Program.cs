@@ -6,6 +6,7 @@ using PhotoSpeech.DataAccess.Handlers;
 using PhotoSpeech.DataAccess.Handlers.Interfaces;
 using PhotoSpeech.DataAccess.Models;
 using PhotoSpeech.Providers;
+using PhotoSpeech.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserHandler, UserHandler>();
 builder.Services.AddSingleton<LoggedUserProvider>();
+builder.Services.AddScoped<BlobStorageService>();
 
 var app = builder.Build();
 
