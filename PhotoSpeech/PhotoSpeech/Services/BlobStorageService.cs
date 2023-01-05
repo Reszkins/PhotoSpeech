@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Components.Forms;
+using System.IO;
 
 namespace PhotoSpeech.Services
 {
@@ -31,7 +32,7 @@ namespace PhotoSpeech.Services
             return blobServiceClient.Uri + nameOfTheItem + "/" + blobs[index].Name;
         }
 
-        public async Task SaveFileToBlobStorage(Stream file, string nameOfTheItem)
+        public async Task SaveFileToBlobStorage(FileStream file, string nameOfTheItem)
         {
             BlobContainerClient container;
             BlobServiceClient blobServiceClient = new BlobServiceClient(_configuration["BlobStorage:ConnectionString"]);
@@ -46,7 +47,7 @@ namespace PhotoSpeech.Services
             }
 
             var blobs = container.GetBlobs().ToList();
-            var blobName = (blobs.Count+1).ToString();
+            var blobName = (blobs.Count+1).ToString() + Path.GetExtension(file.Name);
 
             var newBlob = container.GetBlobClient(blobName);
             await newBlob.UploadAsync(file);
