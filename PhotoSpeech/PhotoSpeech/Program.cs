@@ -22,12 +22,16 @@ builder.Services.AddScoped<IUserHandler, UserHandler>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IWordHandler, WordHandler>();
 builder.Services.AddScoped<IPhotosService, PhotosService>();
+builder.Services.AddScoped<IBingPhotoService, BingPhotoService>();
 builder.Services.AddScoped<ITranslatorService, TranslatorService>();
 builder.Services.AddSingleton<LoggedUserProvider>();
-builder.Services.AddScoped<BlobStorageService>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 builder.Services.Configure<AzureCognitiveOptions>(
     builder.Configuration.GetSection(AzureCognitiveOptions.Section));
+
+builder.Services.Configure<AzureBingSearchOptions>(
+    builder.Configuration.GetSection(AzureBingSearchOptions.Section));
 
 var app = builder.Build();
 
