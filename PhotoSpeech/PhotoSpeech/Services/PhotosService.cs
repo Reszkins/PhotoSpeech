@@ -5,10 +5,12 @@ namespace PhotoSpeech.Services;
 public class PhotosService : IPhotosService
 {
     private readonly IBingPhotoService _bingPhotoService;
+    private readonly IBlobStorageService _blobStorageService;
 
-    public PhotosService(IBingPhotoService bingPhotoService)
+    public PhotosService(IBingPhotoService bingPhotoService, IBlobStorageService blobStorageService)
     {
         _bingPhotoService= bingPhotoService;
+        _blobStorageService= blobStorageService;
     }
 
     private Dictionary<string, string> _animalImagesMock = new()
@@ -38,6 +40,11 @@ public class PhotosService : IPhotosService
     public async Task<string> GetPhotoUrl(string word)
     {
         //return _animalImagesMock[word];
+        Random random = new Random();
+        if(random.Next(1) == 1)
+        {
+            return _blobStorageService.GenerateUrlForRandomImage(word);
+        }
         return await _bingPhotoService.GetPhotoUrlFromBing(word);
     }
 }

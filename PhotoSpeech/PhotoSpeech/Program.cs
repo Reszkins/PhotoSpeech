@@ -25,7 +25,7 @@ builder.Services.AddScoped<IPhotosService, PhotosService>();
 builder.Services.AddScoped<IBingPhotoService, BingPhotoService>();
 builder.Services.AddScoped<ITranslatorService, TranslatorService>();
 builder.Services.AddSingleton<LoggedUserProvider>();
-builder.Services.AddScoped<BlobStorageService>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 builder.Services.Configure<AzureCognitiveOptions>(
     builder.Configuration.GetSection(AzureCognitiveOptions.Section));

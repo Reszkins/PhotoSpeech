@@ -1,10 +1,11 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Components.Forms;
+using PhotoSpeech.Services.Interfaces;
 using System.IO;
 
 namespace PhotoSpeech.Services
 {
-    public class BlobStorageService
+    public class BlobStorageService : IBlobStorageService
     {
         private readonly IConfiguration _configuration;
         public BlobStorageService(IConfiguration configuration)
