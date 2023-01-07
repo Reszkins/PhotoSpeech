@@ -27,7 +27,7 @@
             }
 
             <MudImage Style="max-height: 70%; max-width: 100%" Class="imageFit" Src="@_photoUrl"></MudImage>
-            <MudButton Class="mud-secondary mt-5" OnClick="OnRestartGame">Restart</MudButton>
+            <MudButton Class="mud-secondary mt-5" OnClick="OnRestartGame" Disabled="_isRestarting">Restart</MudButton>
         </MudPaper>
     }
     else if (_isStart && _isFinish)
@@ -35,7 +35,7 @@
         <div class="flex flex-column align-items-center">
             <p class="" style="text-align: center; font-size: 20px; font-weight: 500">Final score: @_score</p>
             <div class="flex mt-5">
-                <MudButton Class="mud-secondary me-2" OnClick="OnStartGame">Play again</MudButton>
+                <MudButton Class="mud-secondary me-2" OnClick="OnStartGame" Disabled="_isGameLoading">Play again</MudButton>
                 <MudButton Class="mud-secondary" OnClick="ToMenu">Menu</MudButton>
             </div>
         </div>
@@ -44,7 +44,7 @@
     {
         <div class="d-flex flex-column" style="align-items: center">
             <h1 style="text-align: center">Press start if you are ready</h1>
-            <MudButton Class="mt-5 mud-secondary" Style="width: fit-content" OnClick="OnStartGame">Start</MudButton>
+            <MudButton Class="mt-5 mud-secondary" Style="width: fit-content" OnClick="OnStartGame" Disabled="_isGameLoading">Start</MudButton>
         </div>
     }
 </div>
@@ -64,13 +64,15 @@
     private readonly int _portion = 20;
     private int _score = 0;
     private bool _isStart = false;
-    private int _timeRemaining = 90;
+    private int _timeRemaining;
     private string _word = "";
     private string _photoUrl = "";
     private PeriodicTimer? _timer;
     private bool _isFinish;
     private List<string> _words = new();
     private List<string> _gameWords = new();
+    private bool _isGameLoading;
+    private bool _isRestarting;
 
     protected override void OnInitialized()
     {
@@ -92,7 +94,7 @@
             if (_jsModule is not null)
             {
                 await _jsModule.InvokeVoidAsync("setDotNetRef", _componentRef);
-                
+
                 await _jsModule.InvokeVoidAsync(
                     "setAzureSpeech",
                     AzureCognitiveOptions.Value,
@@ -103,12 +105,17 @@
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
+        await FreeResources();
+
         if (_jsModule is not null) await _jsModule.DisposeAsync();
     }
 
     private async Task OnStartGame()
     {
-        _timeRemaining = 90;
+        if (_isGameLoading) return;
+        _isGameLoading = true;
+
+        _timeRemaining = 60;
         _score = 0;
         _isStart = true;
         _isFinish = false;
@@ -121,6 +128,9 @@
 
         await StartRecognitionSpeech();
 
+        _isGameLoading = false;
+        _isRestarting = false;
+
         while (await _timer.WaitForNextTickAsync())
         {
             await OnTimerTick();
@@ -129,15 +139,16 @@
 
     private async Task OnRestartGame()
     {
-        _timer?.Dispose();
-        await StopRecognitionSpeech();
+        if (_isRestarting) return;
+        _isRestarting = true;
+
+        await FreeResources();
         await OnStartGame();
     }
 
     private async Task Finish()
     {
-        _timer?.Dispose();
-        await StopRecognitionSpeech();
+        await FreeResources();
         _word = "";
         _photoUrl = "";
         _isFinish = true;
@@ -151,9 +162,7 @@
 
         if (_timeRemaining <= 0)
         {
-            _isFinish = true;
-            _timer?.Dispose();
-            await StopRecognitionSpeech();
+            await Finish();
         }
     }
 
@@ -182,7 +191,7 @@
         _photoUrl = _photosWithLabels[_word];
 
         _photosWithLabels.Remove(_word);
-        
+
         await InvokeAsync(StateHasChanged);
     }
 
@@ -206,8 +215,15 @@
         }
     }
 
+    private async Task FreeResources()
+    {
+        _timer?.Dispose();
+        await StopRecognitionSpeech();
+    }
+
     private void ToMenu()
     {
         NavigationManager.NavigateTo($"/categories");
     }
+
 }
