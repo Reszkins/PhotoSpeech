@@ -4,6 +4,13 @@ namespace PhotoSpeech.Services;
 
 public class PhotosService : IPhotosService
 {
+    private readonly IBingPhotoService _bingPhotoService;
+
+    public PhotosService(IBingPhotoService bingPhotoService)
+    {
+        _bingPhotoService= bingPhotoService;
+    }
+
     private Dictionary<string, string> _animalImagesMock = new()
     {
         {
@@ -30,6 +37,7 @@ public class PhotosService : IPhotosService
 
     public async Task<string> GetPhotoUrl(string word)
     {
-        return _animalImagesMock[word];
+        //return _animalImagesMock[word];
+        return await _bingPhotoService.GetPhotoUrlFromBing(word);
     }
 }
