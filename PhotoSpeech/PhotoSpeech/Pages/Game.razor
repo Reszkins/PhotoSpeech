@@ -1,10 +1,213 @@
-﻿@page "/game/{Language}/{Category}"
+﻿@page "/game/{Language:int}/{CategoryId:int}"
 
-<p>not implemented</p>
+@using PhotoSpeech.Services.Interfaces
+@using PhotoSpeech.DataAccess.Enums
+@using PhotoSpeech.DataAccess.Handlers.Interfaces
+@using Microsoft.Extensions.Options
+@using PhotoSpeech.Options
+
+@implements IAsyncDisposable
+
+@inject IJSRuntime Js
+@inject IGameService GameService
+@inject IWordHandler WordHandler
+@inject IOptions<AzureCognitiveOptions> AzureCognitiveOptions
+@inject NavigationManager NavigationManager
+
+<div class="d-flex justify-center">
+    @if (_isStart && !_isFinish)
+    {
+        <MudPaper Class="red lighten-5 d-flex align-center flex-column pa-5 mx-10 my-1" Style="width: 90%; height: 80vh" Square="true">
+            <p style="font-size: 20px">Score: @_score</p>
+            <p class="mb-4" style="font-size: 20px">Time remaining: @_timeRemaining s</p>
+
+            @if (_timeRemaining == 0)
+            {
+                <p class="mb-4">Time's up!</p>
+            }
+
+            <MudImage Style="max-height: 70%; max-width: 100%" Class="imageFit" Src="@_photoUrl"></MudImage>
+            <MudButton Class="mud-secondary mt-5" OnClick="OnRestartGame">Restart</MudButton>
+        </MudPaper>
+    }
+    else if (_isStart && _isFinish)
+    {
+        <div class="flex flex-column align-items-center">
+            <p class="" style="text-align: center; font-size: 20px; font-weight: 500">Final score: @_score</p>
+            <div class="flex mt-5">
+                <MudButton Class="mud-secondary me-2" OnClick="OnStartGame">Play again</MudButton>
+                <MudButton Class="mud-secondary" OnClick="ToMenu">Menu</MudButton>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column" style="align-items: center">
+            <h1 style="text-align: center">Press start if you are ready</h1>
+            <MudButton Class="mt-5 mud-secondary" Style="width: fit-content" OnClick="OnStartGame">Start</MudButton>
+        </div>
+    }
+</div>
 
 @code {
+
     [Parameter]
-    public string Language { get; set; } = string.Empty;
+    public Language Language { get; set; }
+
     [Parameter]
-    public string Category { get; set; } = string.Empty;
+    public int CategoryId { get; set; }
+
+    private DotNetObjectReference<Game>? _componentRef;
+    private IJSObjectReference? _jsModule;
+
+    private readonly Dictionary<string, string> _photosWithLabels = new();
+    private readonly int _portion = 20;
+    private int _score = 0;
+    private bool _isStart = false;
+    private int _timeRemaining = 90;
+    private string _word = "";
+    private string _photoUrl = "";
+    private PeriodicTimer? _timer;
+    private bool _isFinish;
+    private List<string> _words = new();
+    private List<string> _gameWords = new();
+
+    protected override void OnInitialized()
+    {
+        _componentRef = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _words = await WordHandler.GetAllWordsFromCategory(CategoryId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _jsModule = await Js.InvokeAsync<IJSObjectReference>("import",
+                "./Pages/Game.razor.js");
+
+            if (_jsModule is not null)
+            {
+                await _jsModule.InvokeVoidAsync("setDotNetRef", _componentRef);
+                
+                await _jsModule.InvokeVoidAsync(
+                    "setAzureSpeech",
+                    AzureCognitiveOptions.Value,
+                    Language.GetSpeechToTextLanguageCode());
+            }
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_jsModule is not null) await _jsModule.DisposeAsync();
+    }
+
+    private async Task OnStartGame()
+    {
+        _timeRemaining = 90;
+        _score = 0;
+        _isStart = true;
+        _isFinish = false;
+        _gameWords = new List<string>(_words);
+        _photosWithLabels.Clear();
+
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+        await NextTurn();
+
+        await StartRecognitionSpeech();
+
+        while (await _timer.WaitForNextTickAsync())
+        {
+            await OnTimerTick();
+        }
+    }
+
+    private async Task OnRestartGame()
+    {
+        _timer?.Dispose();
+        await StopRecognitionSpeech();
+        await OnStartGame();
+    }
+
+    private async Task Finish()
+    {
+        _timer?.Dispose();
+        await StopRecognitionSpeech();
+        _word = "";
+        _photoUrl = "";
+        _isFinish = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnTimerTick()
+    {
+        _timeRemaining--;
+        await InvokeAsync(StateHasChanged);
+
+        if (_timeRemaining <= 0)
+        {
+            _isFinish = true;
+            _timer?.Dispose();
+            await StopRecognitionSpeech();
+        }
+    }
+
+    private async Task NextTurn()
+    {
+        if (_photosWithLabels.Count <= _portion / 2 && _gameWords.Any())
+        {
+            var newPhotosWithLabelsPart = await GameService.GetPhotosWithLabels(
+                _gameWords,
+                _portion,
+                Language);
+
+            foreach (var photoWithLabel in newPhotosWithLabelsPart)
+            {
+                _photosWithLabels.Add(photoWithLabel.Key, photoWithLabel.Value);
+            }
+        }
+
+        if (!_photosWithLabels.Any())
+        {
+            await Finish();
+            return;
+        }
+
+        _word = _photosWithLabels.Keys.First();
+        _photoUrl = _photosWithLabels[_word];
+
+        _photosWithLabels.Remove(_word);
+        
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task StartRecognitionSpeech()
+    {
+        if (_jsModule is not null) await _jsModule.InvokeVoidAsync("startSpeech");
+    }
+
+    private async Task StopRecognitionSpeech()
+    {
+        if (_jsModule is not null) await _jsModule.InvokeVoidAsync("stopSpeech");
+    }
+
+    [JSInvokable]
+    public async Task CheckWord(string word)
+    {
+        if (string.Equals(word, _word, StringComparison.CurrentCultureIgnoreCase))
+        {
+            _score++;
+            await NextTurn();
+        }
+    }
+
+    private void ToMenu()
+    {
+        NavigationManager.NavigateTo($"/categories");
+    }
 }

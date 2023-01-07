@@ -68,3 +68,15 @@ main {
         padding-right: 1.5rem !important;
     }
 }
+
+.imageFit {
+    height: 70vh;
+}
+
+@media only screen and (max-width: 600px) {
+
+    .imageFit{
+        width: 80vw;
+        height: 50vh;
+    }
+}

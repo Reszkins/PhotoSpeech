@@ -5,7 +5,10 @@ using MudBlazor.Services;
 using PhotoSpeech.DataAccess.Handlers;
 using PhotoSpeech.DataAccess.Handlers.Interfaces;
 using PhotoSpeech.DataAccess.Models;
+using PhotoSpeech.Options;
 using PhotoSpeech.Providers;
+using PhotoSpeech.Services;
+using PhotoSpeech.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +19,14 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserHandler, UserHandler>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IWordHandler, WordHandler>();
+builder.Services.AddScoped<IPhotosService, PhotosService>();
+builder.Services.AddScoped<ITranslatorService, TranslatorService>();
 builder.Services.AddSingleton<LoggedUserProvider>();
+
+builder.Services.Configure<AzureCognitiveOptions>(
+    builder.Configuration.GetSection(AzureCognitiveOptions.Section));
 
 var app = builder.Build();
 

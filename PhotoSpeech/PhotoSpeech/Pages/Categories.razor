@@ -1,6 +1,7 @@
 ﻿@page "/categories"
 
 @using PhotoSpeech.DataAccess.Models
+@using PhotoSpeech.DataAccess.Enums
 
 @inject NavigationManager NavigationManager
 
@@ -12,9 +13,9 @@
             <MudTh></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Language" Style="width: 50%">@context</MudTd>
+            <MudTd DataLabel="Language" Style="width: 50%">@context.Value</MudTd>
             <MudTd DataLabel="" Style="width: 50%">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="OnChooseThisLanguageClick">Choose this language</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="() => OnChooseThisLanguageClick(context.Key)">Choose this language</MudButton>
             </MudTd>
         </RowTemplate>
     </MudTable>  
@@ -29,7 +30,7 @@ else
         <RowTemplate>
             <MudTd DataLabel="Category" Style="width: 50%">@context.Name</MudTd>
             <MudTd DataLabel="" Style="width: 50%">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="OnChooseThisCategoryClick">Choose this category</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="d-block" OnClick="() => OnChooseThisCategoryClick(context.Id)">Choose this category</MudButton>
             </MudTd>
         </RowTemplate>
     </MudTable>    
@@ -40,9 +41,10 @@ else
 
 @code {
     private List<Category> categories = new();
-    private List<string> languages = new();
+    private Dictionary<int, string> languages = new();
 
     private bool languagePicked = false;
+    private int _language;
 
     protected override void OnInitialized()
     {
@@ -67,18 +69,20 @@ else
                 Name = "Colors"
             });
 
-        languages.AddRange(new[] { "english", "polish", "german", "italian", "spanish" });
+        foreach(var l in Enum.GetValues<Language>())
+        {
+            languages.Add((int)l, l.ToString());
+        }
     }
 
-    private void OnChooseThisLanguageClick()
+    private void OnChooseThisLanguageClick(int language)
     {
+        _language = language;
         languagePicked = true;
     }
 
-    private void OnChooseThisCategoryClick()
+    private void OnChooseThisCategoryClick(int id)
     {
-        var language = "EN";
-        var category = "Animals";
-        NavigationManager.NavigateTo($"/game/{language}/{category}");
+        NavigationManager.NavigateTo($"/game/{_language}/{id}");
     }
 }
