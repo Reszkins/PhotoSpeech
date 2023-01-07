@@ -24,6 +24,7 @@ builder.Services.AddScoped<IWordHandler, WordHandler>();
 builder.Services.AddScoped<IPhotosService, PhotosService>();
 builder.Services.AddScoped<ITranslatorService, TranslatorService>();
 builder.Services.AddSingleton<LoggedUserProvider>();
+builder.Services.AddScoped<BlobStorageService>();
 
 builder.Services.Configure<AzureCognitiveOptions>(
     builder.Configuration.GetSection(AzureCognitiveOptions.Section));
