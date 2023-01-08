@@ -17,14 +17,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddMudServices();
+builder.Services.AddSingleton<LoggedUserProvider>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserHandler, UserHandler>();
-builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IWordHandler, WordHandler>();
+builder.Services.AddScoped<IScoreHandler, ScoreHandler>();
+builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IPhotosService, PhotosService>();
 builder.Services.AddScoped<IBingPhotoService, BingPhotoService>();
 builder.Services.AddScoped<ITranslatorService, TranslatorService>();
-builder.Services.AddSingleton<LoggedUserProvider>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 builder.Services.Configure<AzureCognitiveOptions>(

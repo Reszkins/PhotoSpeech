@@ -5,30 +5,43 @@
 @using PhotoSpeech.DataAccess.Handlers.Interfaces
 @using Microsoft.Extensions.Options
 @using PhotoSpeech.Options
+@using PhotoSpeech.Services
 
 @implements IAsyncDisposable
 
 @inject IJSRuntime Js
 @inject IGameService GameService
 @inject IWordHandler WordHandler
+@inject IScoreHandler ScoreHandler
 @inject IOptions<AzureCognitiveOptions> AzureCognitiveOptions
 @inject NavigationManager NavigationManager
 
-<div class="d-flex justify-center">
+<div class="d-flex flex-column" style="align-items: center;">
     @if (_isStart && !_isFinish)
     {
-        <MudPaper Class="red lighten-5 d-flex align-center flex-column pa-5 mx-10 my-1" Style="width: 90%; height: 80vh" Square="true">
-            <p style="font-size: 20px">Score: @_score</p>
-            <p class="mb-4" style="font-size: 20px">Time remaining: @_timeRemaining s</p>
+        @if (!_isGameLoading)
+        {
+            <MudPaper Square="true" Class="red lighten-5 d-flex align-center flex-column pa-5 mx-10 my-1"
+                      Style="width: 80%;">
 
-            @if (_timeRemaining == 0)
-            {
-                <p class="mb-4">Time's up!</p>
-            }
+                <p style="font-size: 20px">Score: @_score</p>
+                <p class="mb-4" style="font-size: 20px">Time remaining: @_timeRemaining s</p>
 
-            <MudImage Style="max-height: 70%; max-width: 100%" Class="imageFit" Src="@_photoUrl"></MudImage>
+                @if (_timeRemaining == 0)
+                {
+                    <p class="mb-4">Time's up!</p>
+                }
+
+                <MudImage Style="max-height: 50vh; max-width: 100%" Class="imageFit mb-4" Src="@_photoUrl"></MudImage>
+            </MudPaper>
             <MudButton Class="mud-secondary mt-5" OnClick="OnRestartGame" Disabled="_isRestarting">Restart</MudButton>
-        </MudPaper>
+        }
+        else
+        {
+            <div class="d-flex" style="height: 40vh; align-items: center;">
+                <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true"/>
+            </div>
+        }
     }
     else if (_isStart && _isFinish)
     {
@@ -43,7 +56,8 @@
     else
     {
         <div class="d-flex flex-column" style="align-items: center">
-            <h1 style="text-align: center">Press start if you are ready</h1>
+            <p class="mb-4" style="text-align: center; font-size: 25px">Say what you see in the photos.</p>
+            <p class="" style="text-align: center; font-size: 20px">Press start if you are ready.</p>
             <MudButton Class="mt-5 mud-secondary" Style="width: fit-content" OnClick="OnStartGame" Disabled="_isGameLoading">Start</MudButton>
         </div>
     }
@@ -57,20 +71,20 @@
     [Parameter]
     public int CategoryId { get; set; }
 
+    private JsSpeechService _jsSpeechService = null!;
     private DotNetObjectReference<Game>? _componentRef;
-    private IJSObjectReference? _jsModule;
 
-    private readonly Dictionary<string, string> _photosWithLabels = new();
     private readonly int _portion = 20;
-    private int _score = 0;
-    private bool _isStart = false;
+    private int _score;
     private int _timeRemaining;
+    private PeriodicTimer? _timer;
     private string _word = "";
     private string _photoUrl = "";
-    private PeriodicTimer? _timer;
-    private bool _isFinish;
     private List<string> _words = new();
     private List<string> _gameWords = new();
+    private readonly Dictionary<string, string> _photosWithLabels = new();
+    private bool _isStart;
+    private bool _isFinish;
     private bool _isGameLoading;
     private bool _isRestarting;
 
@@ -88,32 +102,31 @@
     {
         if (firstRender)
         {
-            _jsModule = await Js.InvokeAsync<IJSObjectReference>("import",
-                "./Pages/Game.razor.js");
+            var jsModule = await Js.InvokeAsync<IJSObjectReference?>("import", "./Pages/Game.razor.js");
 
-            if (_jsModule is not null)
+            if (jsModule is null)
             {
-                await _jsModule.InvokeVoidAsync("setDotNetRef", _componentRef);
-
-                await _jsModule.InvokeVoidAsync(
-                    "setAzureSpeech",
-                    AzureCognitiveOptions.Value,
-                    Language.GetSpeechToTextLanguageCode());
+                NavigationManager.NavigateTo($"/");
+                return;
             }
+
+            await jsModule.InvokeVoidAsync("setDotNetRef", _componentRef);
+            _jsSpeechService = new JsSpeechService(jsModule);
+            await _jsSpeechService.InitAzureSpeechService(AzureCognitiveOptions, Language);
         }
     }
 
-    async ValueTask IAsyncDisposable.DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await FreeResources();
-
-        if (_jsModule is not null) await _jsModule.DisposeAsync();
+        await _jsSpeechService.DisposeAsync();
     }
 
     private async Task OnStartGame()
     {
         if (_isGameLoading) return;
         _isGameLoading = true;
+        await InvokeAsync(StateHasChanged);
 
         _timeRemaining = 60;
         _score = 0;
@@ -124,12 +137,16 @@
 
         _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
 
-        await NextTurn();
+        await OnNextTurn();
 
-        await StartRecognitionSpeech();
+        await _jsSpeechService.StartRecognitionSpeech();
 
         _isGameLoading = false;
         _isRestarting = false;
+
+        StateHasChanged();
+
+        await _timer.WaitForNextTickAsync();
 
         while (await _timer.WaitForNextTickAsync())
         {
@@ -146,15 +163,6 @@
         await OnStartGame();
     }
 
-    private async Task Finish()
-    {
-        await FreeResources();
-        _word = "";
-        _photoUrl = "";
-        _isFinish = true;
-        await InvokeAsync(StateHasChanged);
-    }
-
     private async Task OnTimerTick()
     {
         _timeRemaining--;
@@ -162,11 +170,21 @@
 
         if (_timeRemaining <= 0)
         {
-            await Finish();
+            await OnFinish();
         }
     }
 
-    private async Task NextTurn()
+    private async Task OnFinish()
+    {
+        await FreeResources();
+        await ScoreHandler.SaveUserScore(_score);
+        _word = "";
+        _photoUrl = "";
+        _isFinish = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnNextTurn()
     {
         if (_photosWithLabels.Count <= _portion / 2 && _gameWords.Any())
         {
@@ -183,26 +201,15 @@
 
         if (!_photosWithLabels.Any())
         {
-            await Finish();
+            await OnFinish();
             return;
         }
 
         _word = _photosWithLabels.Keys.First();
         _photoUrl = _photosWithLabels[_word];
-
         _photosWithLabels.Remove(_word);
 
         await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task StartRecognitionSpeech()
-    {
-        if (_jsModule is not null) await _jsModule.InvokeVoidAsync("startSpeech");
-    }
-
-    private async Task StopRecognitionSpeech()
-    {
-        if (_jsModule is not null) await _jsModule.InvokeVoidAsync("stopSpeech");
     }
 
     [JSInvokable]
@@ -211,14 +218,14 @@
         if (string.Equals(word, _word, StringComparison.CurrentCultureIgnoreCase))
         {
             _score++;
-            await NextTurn();
+            await OnNextTurn();
         }
     }
 
     private async Task FreeResources()
     {
         _timer?.Dispose();
-        await StopRecognitionSpeech();
+        await _jsSpeechService.StopRecognitionSpeech();
     }
 
     private void ToMenu()

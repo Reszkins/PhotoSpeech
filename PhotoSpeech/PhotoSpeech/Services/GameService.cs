@@ -41,7 +41,7 @@ public class GameService : IGameService
 
         var translatedPhotosWithLabels = new Dictionary<string, string>();
 
-        for (var i = 0; i < photosWithLabels.Count; i++)
+        for (var i = 0; i < translatedWords.Length; i++)
         {
             translatedPhotosWithLabels.Add(translatedWords[i], photosWithLabels.Values.ToArray()[i]);
         }
