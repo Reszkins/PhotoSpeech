@@ -19,7 +19,7 @@ public class ScoreHandler : IScoreHandler
     
     public async Task<List<Score>> Get100BestScores()
     {
-        var sql = $"SELECT TOP 100 * FROM [dbo].[Scores] ORDER BY Value DESC";
+        var sql = "SELECT TOP 100 * FROM [dbo].[Scores] ORDER BY Value DESC";
         
         var scores = await _db.LoadData<Score>(sql);
 

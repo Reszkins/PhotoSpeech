@@ -21,11 +21,15 @@
     {
         @if (!_isGameLoading)
         {
-            <MudPaper Square="true" Class="red lighten-5 d-flex align-center flex-column pa-5 mx-10 my-1"
+            <MudAlert Class="mb-3" Severity="Severity.Error" Style="@StyleForAlert(_isErrorAlert)">Wrong answer. Try again.</MudAlert>
+            <MudPaper Square="true" Class="indigo lighten-5 d-flex align-center flex-column pa-5 mx-10 my-1"
                       Style="width: 80%;">
 
-                <p style="font-size: 20px">Score: @_score</p>
-                <p class="mb-4" style="font-size: 20px">Time remaining: @_timeRemaining s</p>
+                <p class="mb-2" style="font-size: 20px; font-family: 'Press Start 2P',serif">Score: @_score</p>
+                <div class="mb-4 d-flex gap-2" style="align-items: center">
+                    <MudIcon Icon="@Icons.Material.Filled.Timer" Title="Timer" />
+                    <span style="font-size: 12px; font-weight: 200; font-family: 'Press Start 2P',serif">@_timeRemaining s</span>
+                </div>
 
                 @if (_timeRemaining == 0)
                 {
@@ -33,6 +37,12 @@
                 }
 
                 <MudImage Style="max-height: 50vh; max-width: 100%" Class="imageFit mb-4" Src="@_photoUrl"></MudImage>
+                @if (_displayHint)
+                {
+                    <p class="mud-primary-text" style="font-size: 18px;">
+                        Hint: <span style="font-weight: 500">@_word</span>
+                    </p>
+                }
             </MudPaper>
             <MudButton Class="mud-secondary mt-5" OnClick="OnRestartGame" Disabled="_isRestarting">Restart</MudButton>
         }
@@ -46,8 +56,18 @@
     else if (_isStart && _isFinish)
     {
         <div class="flex flex-column align-items-center">
+            <div class="mb-5">
+            @if (_score < 4)
+            {
+                <p style="text-align: center; font-size: 25px">😢 You need to learn!</p>
+            }
+            else
+            {
+                <p style="text-align: center; font-size: 25px">😄 Yay! Good job!</p>
+            }
+            </div>
             <p class="" style="text-align: center; font-size: 20px; font-weight: 500">Final score: @_score</p>
-            <div class="flex mt-5">
+            <div class="d-flex mt-5" style="justify-content: center">
                 <MudButton Class="mud-secondary me-2" OnClick="OnStartGame" Disabled="_isGameLoading">Play again</MudButton>
                 <MudButton Class="mud-secondary" OnClick="ToMenu">Menu</MudButton>
             </div>
@@ -78,6 +98,8 @@
     private int _score;
     private int _timeRemaining;
     private PeriodicTimer? _timer;
+    private int _failureCounter;
+    private bool _displayHint;
     private string _word = "";
     private string _photoUrl = "";
     private List<string> _words = new();
@@ -87,6 +109,7 @@
     private bool _isFinish;
     private bool _isGameLoading;
     private bool _isRestarting;
+    private bool _isErrorAlert;
 
     protected override void OnInitialized()
     {
@@ -208,6 +231,9 @@
         _word = _photosWithLabels.Keys.First();
         _photoUrl = _photosWithLabels[_word];
         _photosWithLabels.Remove(_word);
+        _displayHint = false;
+        _failureCounter = 0;
+        _isErrorAlert = false;
 
         await InvokeAsync(StateHasChanged);
     }
@@ -220,6 +246,17 @@
             _score++;
             await OnNextTurn();
         }
+        else
+        {
+            _isErrorAlert = true;
+            _failureCounter++;
+
+            if (_failureCounter == 5)
+            {
+                _displayHint = true;
+                _failureCounter = 0;
+            }
+        }
     }
 
     private async Task FreeResources()
@@ -231,6 +268,21 @@
     private void ToMenu()
     {
         NavigationManager.NavigateTo($"/categories");
+    }
+
+    private string StyleForAlert(bool isVisible)
+    {
+        var finalStyle = "margin-top: -40px; visibility: ";
+        if (isVisible)
+        {
+            finalStyle += "visible;";
+        }
+        else
+        {
+            finalStyle += "hidden;";
+        }
+
+        return finalStyle;
     }
 
 }
