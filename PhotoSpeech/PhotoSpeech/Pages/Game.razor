@@ -69,6 +69,7 @@
             <p class="" style="text-align: center; font-size: 20px; font-weight: 500">Final score: @_score</p>
             <div class="d-flex mt-5" style="justify-content: center">
                 <MudButton Class="mud-secondary me-2" OnClick="OnStartGame" Disabled="_isGameLoading">Play again</MudButton>
+                <MudButton Class="mud-secondary me-2" OnClick="ToRanking">Ranking</MudButton>
                 <MudButton Class="mud-secondary" OnClick="ToMenu">Menu</MudButton>
             </div>
         </div>
@@ -268,6 +269,11 @@
     private void ToMenu()
     {
         NavigationManager.NavigateTo($"/categories");
+    }
+    
+    private void ToRanking()
+    {
+        NavigationManager.NavigateTo($"/ranking");
     }
 
     private string StyleForAlert(bool isVisible)
