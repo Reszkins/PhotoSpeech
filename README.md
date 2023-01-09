@@ -67,6 +67,9 @@ W czasie rozgrywki aplikacja losuje zdjęcia dla ustalonych pojęć. Czasem bier
 ## KeyVault
 Wszystkie klucze i connection stringi, są przechowywane w Azure Key Vaulcie za pomocą secretów. Z KeyVaultem łączymy się za pomocą stworzonego w app service, managed identity, które jest częścią Azure AD. W KeyVaulcie jest dodane policy, które pozwala naszemu App Service mieć dostęp do secretów.
 
+## Azure AD
+Wykorzystane do połączenia App service z KeyVault.
+
 ## Cognitive services
 
 ### Speech to Text
