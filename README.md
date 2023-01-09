@@ -56,6 +56,9 @@ W bazie znajdują się tabele:
 W blob storage znajdują się kontenery odpowiadające słowom w bazie.  
 W kotenerach znajdują się obrazki które są losowane podczas grania w grę.
 
+## Bing search
+W czasie rozgrywki aplikacja losuje zdjęcia dla ustalonych pojęć. Czasem bierze obrazki z bloba, a czasem wyszukuje je za pomocą bing searcha. W ten sposób jesteśmy w stanie zapewnić większą różnorodność w trakcie nauki.
+
 ## Cognitive services
 
 ### Speech to Text
