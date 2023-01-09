@@ -6,6 +6,11 @@ namespace PhotoSpeech.DataAccess
 {
     public class SqlDataAccess
     {
+        //private readonly IConfiguration _configuration;
+        //public SqlDataAccess(IConfiguration configuration)
+        //{
+        //    _configuration = configuration;
+        //}
         private readonly string connStr;
         public SqlDataAccess()
         {
@@ -16,7 +21,7 @@ namespace PhotoSpeech.DataAccess
         }
         public async Task<List<T>> LoadData<T>(string sql)
         {
-            string connectionString = connStr;
+            string connectionString = connStr;// _configuration["ConnectionStrings:photoSpeachDb"];
 
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
@@ -27,7 +32,7 @@ namespace PhotoSpeech.DataAccess
 
         public async Task SaveData(string sql)
         {
-            string connectionString = connStr;
+            string connectionString = connStr;// _configuration["ConnectionStrings:photoSpeachDb"];
 
             using (IDbConnection connection = new SqlConnection(connectionString))
             {

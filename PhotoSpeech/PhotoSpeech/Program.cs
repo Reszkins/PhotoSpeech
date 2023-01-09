@@ -1,7 +1,9 @@
+using Azure.Identity;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
+using PhotoSpeech.DataAccess;
 using PhotoSpeech.DataAccess.Handlers;
 using PhotoSpeech.DataAccess.Handlers.Interfaces;
 using PhotoSpeech.DataAccess.Models;
@@ -34,6 +36,10 @@ builder.Services.Configure<AzureCognitiveOptions>(
 
 builder.Services.Configure<AzureBingSearchOptions>(
     builder.Configuration.GetSection(AzureBingSearchOptions.Section));
+
+builder.Configuration.AddAzureKeyVault(
+    new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
+    new DefaultAzureCredential());
 
 var app = builder.Build();
 
