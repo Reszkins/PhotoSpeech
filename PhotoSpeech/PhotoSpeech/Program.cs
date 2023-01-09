@@ -26,6 +26,7 @@ builder.Services.AddScoped<IWordHandler, WordHandler>();
 builder.Services.AddScoped<IScoreHandler, ScoreHandler>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IPhotosService, PhotosService>();
+builder.Services.AddScoped<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddScoped<IBingPhotoService, BingPhotoService>();
 builder.Services.AddScoped<ITranslatorService, TranslatorService>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
@@ -36,6 +37,9 @@ builder.Services.Configure<AzureCognitiveOptions>(
 
 builder.Services.Configure<AzureBingSearchOptions>(
     builder.Configuration.GetSection(AzureBingSearchOptions.Section));
+
+builder.Services.Configure<DatabaseOptions>(
+    builder.Configuration.GetSection(DatabaseOptions.Section));
 
 builder.Configuration.AddAzureKeyVault(
     new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),

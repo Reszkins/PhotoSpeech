@@ -1,27 +1,28 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Options;
+using PhotoSpeech.Options;
 using System.Data;
 
 namespace PhotoSpeech.DataAccess
 {
-    public class SqlDataAccess
+    public interface ISqlDataAccess
     {
-        //private readonly IConfiguration _configuration;
-        //public SqlDataAccess(IConfiguration configuration)
-        //{
-        //    _configuration = configuration;
-        //}
-        private readonly string connStr;
-        public SqlDataAccess()
+        Task<List<T>> LoadData<T>(string sql);
+        Task SaveData(string sql);
+    }
+    public class SqlDataAccess : ISqlDataAccess
+    {
+        private readonly DatabaseOptions _databaseOptions;
+
+        public SqlDataAccess(IOptions<DatabaseOptions> databaseOptions)
         {
-            var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-            connStr = configuration.GetValue<string>("ConnectionStrings:photoSpeachDb");
+            _databaseOptions = databaseOptions.Value;
         }
+
         public async Task<List<T>> LoadData<T>(string sql)
         {
-            string connectionString = connStr;// _configuration["ConnectionStrings:photoSpeachDb"];
+            var connectionString = _databaseOptions.PhotoSpeachDb;
 
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
@@ -32,7 +33,7 @@ namespace PhotoSpeech.DataAccess
 
         public async Task SaveData(string sql)
         {
-            string connectionString = connStr;// _configuration["ConnectionStrings:photoSpeachDb"];
+            var connectionString = _databaseOptions.PhotoSpeachDb;
 
             using (IDbConnection connection = new SqlConnection(connectionString))
             {

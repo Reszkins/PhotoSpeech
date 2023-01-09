@@ -7,13 +7,13 @@ namespace PhotoSpeech.DataAccess.Handlers
 {
     public class UserHandler : IUserHandler
     {
-        private SqlDataAccess _db;
+        private ISqlDataAccess _db;
         private readonly IPasswordHasher<User> _passwordHasher;
         private LoggedUserProvider _loggedUserProvider;
-        public UserHandler(IPasswordHasher<User> passwordHasher, LoggedUserProvider loggedUserProvider)
+        public UserHandler(IPasswordHasher<User> passwordHasher, LoggedUserProvider loggedUserProvider, ISqlDataAccess db)
         {
             _passwordHasher = passwordHasher;
-            _db = new SqlDataAccess();
+            _db = db;
             _loggedUserProvider = loggedUserProvider;
         }
         public async Task<User?> GetUser(string login)

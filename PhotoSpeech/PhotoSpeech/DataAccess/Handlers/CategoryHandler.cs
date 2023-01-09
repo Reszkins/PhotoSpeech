@@ -5,11 +5,11 @@ namespace PhotoSpeech.DataAccess.Handlers
 {
     public class CategoryHandler : ICategoryHandler
     {
-        private SqlDataAccess _db;
+        private ISqlDataAccess _db;
 
-        public CategoryHandler()
+        public CategoryHandler(ISqlDataAccess db)
         {
-            _db = new SqlDataAccess();
+            _db = db;
         }
         public async Task<List<Category>> GetAllCategories()
         {

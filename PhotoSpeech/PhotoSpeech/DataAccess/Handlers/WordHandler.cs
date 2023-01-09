@@ -5,11 +5,11 @@ namespace PhotoSpeech.DataAccess.Handlers;
 
 public class WordHandler : IWordHandler
 {
-    private SqlDataAccess _db;
+    private ISqlDataAccess _db;
 
-    public WordHandler()
+    public WordHandler(ISqlDataAccess db)
     {
-        _db = new SqlDataAccess();
+        _db = db;
     }
     
     public Task<List<Word>> GetAllWords()

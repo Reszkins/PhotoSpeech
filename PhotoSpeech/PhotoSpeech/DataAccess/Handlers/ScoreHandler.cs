@@ -6,13 +6,13 @@ namespace PhotoSpeech.DataAccess.Handlers;
 
 public class ScoreHandler : IScoreHandler
 {
+    private readonly ISqlDataAccess _db;
     private readonly LoggedUserProvider _loggedUserProvider;
     private readonly IUserHandler _userHandler;
-    private readonly SqlDataAccess _db;
 
-    public ScoreHandler(LoggedUserProvider loggedUserProvider, IUserHandler userHandler)
+    public ScoreHandler(LoggedUserProvider loggedUserProvider, IUserHandler userHandler, ISqlDataAccess db)
     {
-        _db = new SqlDataAccess();
+        _db = db;
         _loggedUserProvider = loggedUserProvider;
         _userHandler = userHandler;
     }
