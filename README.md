@@ -54,6 +54,9 @@ W bazie znajdują się tabele:
 * Users, gdzie są przechowywane nazwy użytkowników i zahashowane hasła.
 * Scores, gdzie przechowywane są wszystkie wyniki użytkowników liczone na podstawie tego ile słów udało się wypowiedzieć podczas jednej rozgrywki
 
+## App service
+App service został wykorzystany do deployu naszej aplikacji w azurewebsites. Dzięki CD po każdym commicie na gałąź master strona zostaje budowana na nowo i dostępna jest najnowsza wersja
+
 ## Blob storage
 W blob storage znajdują się kontenery odpowiadające słowom w bazie.  
 W kotenerach znajdują się obrazki które są losowane podczas grania w grę.
