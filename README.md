@@ -75,14 +75,17 @@ Po uruchomieniu nasłuchiwania, aplikacja kliencka w przeglądarce użytkownika 
 
 Z użyciem Speech to Text wiąże się też kilka wad. Przykładowo jest wyczuwalne opóźnienie pomiędzy wypowiadanymi słowami, a otrzymywanym wynikiem zamiany mowy na tekst. Jednakże opóźnienie nie jest na tyle duże by sprawiało dyskomfort użytkownikowi. Sporą zaletą jest prostota SDK. Programista nie musi przejmować się w jaki sposób dźwięk jest przechwytywany i wysyłany. Wystarczy kierować się krótką i treściwą instrukcją przygotowaną przez firmę Microsoft.
 
-
 ### Translator
 
 Translator został wykorzystany do tłumaczenia słówek z bazy danych na wybrany przez użytkownika język.
 
 Słówka w bazie danych znajdują się w języku angielskim. Na początku rozgrywki słówka te są pobierane z bazy na podstawie wybranej przez użytkownika kategorii, a następnie są tłumaczone za pomocą Translatora na wybrany język. W trakcie gry porównywane są słówka już przetłumaczone ze słowami wypowiadanymi przez użytkownika.
 
-Komunikacja programu z serwisem odbywa się poprzez wysłanie odpowiedniego zapytania zawierającego kod języka tłumaczonego i kod języka oczekiwanego.  
+Komunikacja programu z serwisem odbywa się poprzez wysłanie odpowiedniego zapytania zawierającego kod języka tłumaczonego i kod języka oczekiwanego.
+
+## Azure Functions
+
+Azure Functions zostały wykorzystane do stworzenia czasowo wyzwalanej funckji, która czyści punkty użytkowników w bazie danych, co określony czas.
 
 ## Azure DevOps
 
