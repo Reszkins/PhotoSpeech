@@ -108,4 +108,11 @@ W projekcie zostały użyte następujące technologie:
  - .NET 6 
  - Blazor
 
+## Zespół
 
+* Oskar Reszka https://github.com/Reszkins/
+* Konrad Trusiewicz https://github.com/Femtoo
+* Zuzanna Gaik https://github.com/zvzia
+* Kacper Tarłowski https://github.com/Kacpu
+* Bartłomiej Kopyść https://github.com/BKopysc
+* Jakub Gromiński https://github.com/jgrominski
