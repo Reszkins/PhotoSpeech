@@ -19,3 +19,20 @@ Dostępny jest ranking użytkowników, w którym wyświetlane są punkty za najs
 
 ## Architektura rozwiązania
 ![architekturapng](https://user-images.githubusercontent.com/73696833/210354594-879d10ec-3674-48cf-b260-dddb854fd65d.png)
+
+## Baza danych
+Użyta baza danych to Azure SQL Database.
+
+Diagram bazy:
+
+![diagram](https://user-images.githubusercontent.com/73696833/211349359-28876cff-6ef0-4664-8007-24b5b8a58925.png)
+
+W bazie znajdują się tabele:
+* Words, gdzie przechowywane są słowa po angielsku z przypisanymi im kategoriami
+* Categories, są to kategorie słów (np. zwierzęta, jedzenie)
+* Users, gdzie są przechowywane nazwy użytkowników i zahashowane hasła.
+* Scores, gdzie przechowywane są wszystkie wyniki użytkowników liczone na podstawie tego ile słów udało się wypowiedzieć podczas jednej rozgrywki
+
+## Blob storage
+W blob storage znajdują się kontenery odpowiadające słowom w bazie.  
+W kotenerach znajdują się obrazki które są losowane podczas grania w grę.
