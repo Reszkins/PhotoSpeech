@@ -76,9 +76,17 @@ Słówka w bazie danych znajdują się w języku angielskim. Na początku rozgry
 
 Komunikacja programu z serwisem odbywa się poprzez wysłanie odpowiedniego zapytania zawierającego kod języka tłumaczonego i kod języka oczekiwanego.  
 
+## Azure DevOps
+
+W czasie trwania projektu został wykorzystany Azure DevOps do zarządzania projektem. Najczęściej używana była tablica Kanban, która pozwoliłla na przydzielenie zadań dla konkretnych użytkowników, a także na oznaczanie statusu zadań. Tabela w trakcie prac prezentowała się następująco:
+
+![image](https://user-images.githubusercontent.com/57834846/211391512-3e031497-a039-4686-b7fb-bc64945ed897.png)
+
+
 ## Stos technologiczny
 
 W projekcie zostały użyte następujące technologie: 
  - .NET 6 
  - Blazor
+
 
