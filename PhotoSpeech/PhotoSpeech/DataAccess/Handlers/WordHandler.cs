@@ -19,14 +19,14 @@ public class WordHandler : IWordHandler
 
     public async Task<List<string>> GetAllWordsFromCategory(int categoryId)
     {
-        var sql = $"SELECT * FROM [dbo].[Words] WHERE [CategoryId] = '{categoryId}'";
-        
-        // var words = await _db.LoadData<Word>(sql);
-        //
-        // var wordValues = words.Select(w => w.Value).ToList();
-        
-        var wordValues = new List<string> {"cat", "tiger", "bear", "elephant", "giraffe"};
-        
+        var sql = $"SELECT * FROM [dbo].[Words] WHERE [CategoryID] = '{categoryId}'";
+
+        var words = await _db.LoadData<Word>(sql);
+
+        var wordValues = words.Select(w => w.Value).ToList();
+
+        //var wordValues = new List<string> {"cat", "tiger", "bear", "elephant", "giraffe"};
+
         return wordValues;
     }
 }

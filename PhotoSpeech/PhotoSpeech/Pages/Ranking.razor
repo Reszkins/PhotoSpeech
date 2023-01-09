@@ -1,0 +1,26 @@
+﻿@page "/ranking"
+@using PhotoSpeech.DataAccess.Handlers.Interfaces
+@using PhotoSpeech.DataAccess.Models
+
+@inject NavigationManager NavigationManager
+@inject IScoreHandler _scoreHandler
+
+<MudTable Items="@scores" Hover="true" LoadingProgressColor="Color.Info" Style="margin-left: 15%; margin-right: 15%;">
+    <HeaderContent>
+        <MudTh>Ranking</MudTh>
+        <MudTh>Score</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Username" Style="width: 50%">@context.Name</MudTd>
+        <MudTd DataLabel="Score" Style="width: 50%">@context.Score</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    List<RankingVM> scores = new List<RankingVM>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        scores = await _scoreHandler.Get100BestScores();
+    }
+}

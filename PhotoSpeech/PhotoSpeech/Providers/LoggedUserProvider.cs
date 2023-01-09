@@ -11,7 +11,10 @@
             _username = username;
         }
 
-        public void LogUserOut() => _isUserLoggedIn = false;
+        public void LogUserOut() {
+            _isUserLoggedIn = false;
+            _username = "";
+        } 
 
         public bool IsUserLoggedIn() => _isUserLoggedIn;
 

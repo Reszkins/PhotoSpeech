@@ -38,13 +38,14 @@
 
     private async Task OnLoginClick()
     {
-        //var result = await _userHandler.Login(LoginValue, PasswordValue);
-        NavigationManager.NavigateTo("/categories");
+        var result = await _userHandler.Login(LoginValue, PasswordValue);
+        if(result) {
+            NavigationManager.NavigateTo("/categories");
+        }
     }
 
     private async Task OnRegisterClick()
     {
-        //var result = await _userHandler.Register(RegisterLoginValue, RegisterPasswordValue);
-        NavigationManager.NavigateTo("/categories");
+        await _userHandler.Register(RegisterLoginValue, RegisterPasswordValue);
     }
 }

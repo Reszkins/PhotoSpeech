@@ -18,7 +18,7 @@ namespace PhotoSpeech.DataAccess.Handlers
         }
         public async Task<User?> GetUser(string login)
         {
-            string sql = $"SELECT * FROM [dbo].[Users] WHERE [UserName] = '{login}'";
+            string sql = $"SELECT * FROM [dbo].[Users] WHERE [Username] = '{login}'";
 
             var result = await _db.LoadData<User>(sql);
             if (result.Count < 1)
@@ -29,9 +29,18 @@ namespace PhotoSpeech.DataAccess.Handlers
             return result[0];
         }
 
+        public async Task<List<User>> GetAllUsers()
+        {
+            string sql = $"SELECT * FROM [dbo].[Users]";
+
+            var result = await _db.LoadData<User>(sql);
+            
+            return result;
+        }
+
         public async Task<bool> AddUser(User user)
         {
-            string sql = $"INSERT INTO [dbo].[Users] (UserName, Password) VALUES ('{user.Username}', '{user.Password}')";
+            string sql = $"INSERT INTO [dbo].[Users] (Username, Password) VALUES ('{user.Username}', '{user.Password}')";
 
             await _db.SaveData(sql);
             return true;

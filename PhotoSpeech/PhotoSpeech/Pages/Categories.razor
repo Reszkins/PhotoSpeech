@@ -1,9 +1,11 @@
 ﻿@page "/categories"
 
+@using PhotoSpeech.DataAccess.Handlers.Interfaces
 @using PhotoSpeech.DataAccess.Models
 @using PhotoSpeech.DataAccess.Enums
 
 @inject NavigationManager NavigationManager
+@inject ICategoryHandler _categoryHandler
 
 @if (!languagePicked)
 {
@@ -48,30 +50,38 @@ else
 
     protected override void OnInitialized()
     {
-        categories.Add(new Category
-            {
-                Id = 1,
-                Name = "Animals"
-            });
-        categories.Add(new Category
-            {
-                Id = 2,
-                Name = "People"
-            });
-        categories.Add(new Category
-            {
-                Id = 3,
-                Name = "Weather"
-            });
-        categories.Add(new Category
-            {
-                Id = 4,
-                Name = "Colors"
-            });
+        //categories.Add(new Category
+        //    {
+        //        Id = 1,
+        //        Name = "Animals"
+        //    });
+        //categories.Add(new Category
+        //    {
+        //        Id = 2,
+        //        Name = "People"
+        //    });
+        //categories.Add(new Category
+        //    {
+        //        Id = 3,
+        //        Name = "Weather"
+        //    });
+        //categories.Add(new Category
+        //    {
+        //        Id = 4,
+        //        Name = "Colors"
+        //    });
 
         foreach(var l in Enum.GetValues<Language>())
         {
             languages.Add((int)l, l.ToString());
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            categories = await _categoryHandler.GetAllCategories();
         }
     }
 

@@ -28,7 +28,7 @@ namespace PhotoSpeech.Services
             int numberOfBlobs = blobs.Count;
 
             Random random = new Random();
-            int index = random.Next(numberOfBlobs)+1;
+            int index = random.Next(numberOfBlobs);
 
             return blobServiceClient.Uri + nameOfTheItem + "/" + blobs[index].Name;
         }
