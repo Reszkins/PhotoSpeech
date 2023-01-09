@@ -59,6 +59,9 @@ W kotenerach znajdują się obrazki które są losowane podczas grania w grę.
 ## Bing search
 W czasie rozgrywki aplikacja losuje zdjęcia dla ustalonych pojęć. Czasem bierze obrazki z bloba, a czasem wyszukuje je za pomocą bing searcha. W ten sposób jesteśmy w stanie zapewnić większą różnorodność w trakcie nauki.
 
+## KeyVault
+Wszystkie klucze i connection stringi, są przechowywane w Azure Key Vaulcie za pomocą secretów. Z KeyVaultem łączymy się za pomocą stworzonego w app service, managed identity, które jest częścią Azure AD. W KeyVaulcie jest dodane policy, które pozwala naszemu App Service mieć dostęp do secretów.
+
 ## Cognitive services
 
 ### Speech to Text
