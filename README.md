@@ -27,7 +27,7 @@ Schemat działania aplikacji przebiega następująco:
 1. Użytkownik loguje się bądź zakłada konto.
 2. System wyświetla listę dostępnych języków.
 3. Użytkownik wybiera język, w którym chce odpowiadać.
-4. System wyświetla listę dostępnych kategorii
+4. System wyświetla listę dostępnych kategorii.
 5. Użytkownik wybiera pożądaną kategorię.
 6. System wyświetla ekran startowy.
 7. Użytkownik wybiera rozpoczęcie gry.
@@ -36,7 +36,7 @@ Schemat działania aplikacji przebiega następująco:
     * Jeśli użytkownik odpowie dobrze, to system pokazuje kolejny obrazek i dodaje punkty użytkownikowi.
     * Jeśli użytkownik odpowie źle, to system wyświetla komunikat o niepoprawnej odpowiedzi i dalej czeka na poprawną odpowiedź. W przypadku pięciu błędnych odpowiedzi, system wyświetli podpowiedź.
     * Jeśli użytkownik wybierze “Restart”, to gra rozpoczyna się od kroku 8.
-10. System kończy rozgrywkę i wyświetla komunikat wraz z wynikiem. Zapisuje w bazie danych uzyskany rezultat, jeśli jest lepszy niż poprzedni wynik uzyskany przez użytkownika.
+10. System kończy rozgrywkę i wyświetla komunikat wraz z wynikiem. Zapisuje w bazie danych uzyskany rezultat.
 11. Użytkownik wybiera, czy chce grać dalej, wrócić do menu, lub czy chce zobaczyć globalny ranking.
 
 
