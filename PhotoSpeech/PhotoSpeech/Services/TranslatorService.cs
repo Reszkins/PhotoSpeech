@@ -38,7 +38,9 @@ public class TranslatorService : ITranslatorService
         var resultJson = await response.Content.ReadAsStringAsync();
         var resultJArray = JArray.Parse(resultJson);
         var result = resultJArray[0]["translations"]?[0]?["text"]?.ToString()!;
-        var resultArray = result.Split(new []{';', ','});
+        var resultArray = result.Split(new[] {';', ','}, StringSplitOptions.TrimEntries)
+            .Distinct()
+            .ToArray();
 
         return resultArray;
     }
