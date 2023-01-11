@@ -6,7 +6,7 @@
 @inject IUserHandler _userHandler
 
 <div style="margin-left: 20%; margin-right:20%">
-     <MudAlert Class="mb-3" Severity="Severity.Success" Style="@StyleForAlert(_isRegisterAlert)"></MudAlert>
+     <MudAlert Class="mb-3" Severity="Severity.Success" Style="@StyleForAlert(_isRegisterAlert)">Register success. You can now sign in.</MudAlert>
     <div class="d-inline-block pa-10">
         <div class="d-block pa-2">
             <MudTextField @bind-Value="LoginValue" Label="Login" Variant="Variant.Outlined" Class="d-block"></MudTextField>
