@@ -12,6 +12,7 @@
 <MudLayout>
     <MudAppBar Color="Color.Primary" Fixed="false">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="Menu" />
+        <MudIconButton Icon="@Icons.Material.Filled.VideogameAsset" Color="Color.Inherit" OnClick="Categories"/>
         <MudIconButton Icon="@Icons.Material.Filled.Scoreboard" Color="Color.Inherit" OnClick="Ranking"/>
             <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Inherit" OnClick="Logout"/>
@@ -26,6 +27,10 @@
 
     private void Menu() {
         NavigationManager.NavigateTo("");
+    }
+
+    private void Categories() {
+        NavigationManager.NavigateTo("/categories");
     }
 
     private void Logout() {
