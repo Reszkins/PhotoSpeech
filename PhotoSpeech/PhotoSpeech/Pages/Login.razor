@@ -1,4 +1,4 @@
-﻿@page "/login"
+@page "/login"
 @using PhotoSpeech.DataAccess.Handlers
 @using PhotoSpeech.DataAccess.Handlers.Interfaces
 
@@ -6,6 +6,7 @@
 @inject IUserHandler _userHandler
 
 <div style="margin-left: 20%; margin-right:20%">
+     <MudAlert Class="mb-3" Severity="Severity.Success" Style="@StyleForAlert(_isRegisterAlert)"></MudAlert>
     <div class="d-inline-block pa-10">
         <div class="d-block pa-2">
             <MudTextField @bind-Value="LoginValue" Label="Login" Variant="Variant.Outlined" Class="d-block"></MudTextField>
@@ -36,6 +37,8 @@
     public string RegisterLoginValue { get; set; } = string.Empty;
     public string RegisterPasswordValue { get; set; } = string.Empty;
 
+    private bool _isRegisterAlert;
+
     private async Task OnLoginClick()
     {
         var result = await _userHandler.Login(LoginValue, PasswordValue);
@@ -47,5 +50,23 @@
     private async Task OnRegisterClick()
     {
         await _userHandler.Register(RegisterLoginValue, RegisterPasswordValue);
+        RegisterLoginValue = string.Empty;
+        RegisterPasswordValue = string.Empty;
+        _isRegisterAlert = true;
+    }
+
+    private string StyleForAlert(bool isVisible)
+    {
+        var finalStyle = "visibility: ";
+        if (isVisible)
+        {
+            finalStyle += "visible;";
+        }
+        else
+        {
+            finalStyle += "hidden;";
+        }
+
+        return finalStyle;
     }
 }
